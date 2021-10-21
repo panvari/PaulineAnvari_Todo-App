@@ -1,49 +1,65 @@
-import "./styles.css";
-
-import React, {useState, userEffect, useEffect} from 'react';
-
 import PropTypes from "prop-types";
+import React, { useState, useEffect, useContext } from 'react';
+import { TodosContext } from '../../context/todos-context';
 
-import {GoTrashcan, GoCheck} from 'react-icons/go';
+import {GoTrashcan, GoCheck } from 'react-icons/go';
+
+import './styles.css'
 
 export const Todo = (props) => {
 
-    const [isComplete, setIsComplete] = useState(false);
+    const todosContext = useContext(TodosContext);
 
-    useEffect( () => {
+    const [ isComplete, setIsComplete ] = useState(false);
+  
+    useEffect(() => {
         setIsComplete(props.isComplete)
-    }, [props.isComplete])
+    }, []);
+
+    useEffect(()=> {
+       
+        todosContext.updateTodo(props.todoId, isComplete)
+
+    }, [isComplete]);
 
     const toggleCompleteTodo = () => {
         setIsComplete (!isComplete);
     }
 
+    const deleteTodo = () => {
+        todosContext.deleteTodo(props.todoId);
+    }
+
     return (
-        <div className={`todo ${props.color}`} style={isComplete ? {opacity: 0.2} : {}}>
-            <div> 
-                <p className="todo-text"> {props.text} </p>
-                <p className="todo-date"> {props.date} </p>
+        <div className={`todo ${props.color}`} style={isComplete ? {opacity: 0.2} : {} }>
+
+            <div>
+                <p className="todo-text"> { props.text } </p>
+                <p className="todo-date"> { props.date } </p>
             </div>
+
 
             <div className="todo-btns">
                 <button className="todo-complete" onClick={toggleCompleteTodo}>
-                    <GoCheck className="todo-icon" style={{fontSize: "35px"}}/>
+                    <GoCheck className="todo-icon" style={{ fontSize: 
+                        "35px"}} />
                 </button>
-
-                <button className="todo-delete">
-                    <GoTrashcan className="todo-icon" style={{fontSize: "35px"}}/>
+                <button className="todo-delete" onClick={deleteTodo}>
+                    <GoTrashcan className="todo-icon" style={{ fontSize: 
+                        "35px"}} />
                 </button>
             </div>
+
         </div>
     )
 }
 
 Todo.propTypes = {
-    text: PropTypes.string.isRequired,
+    text: PropTypes.string.isRequired, 
     date: PropTypes.string.isRequired,
-    color: PropTypes.string.isRequired,
+    color: PropTypes.string,
     priority: PropTypes.bool,
-    isComplete: PropTypes.bool.isRequired
+    isComplete: PropTypes.bool
 }
 
 Todo.defaultProps = {
